@@ -1,0 +1,52 @@
+<div class="section-card animate-fade-in">
+    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2>📁 Academic Resource Folder</h2>
+            <p>Manage separate course binders, design notes, and load attached repository materials.</p>
+        </div>
+        
+        <!-- Subject Management controls -->
+        <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+            <div class="subject-selector-wrapper">
+                <label for="folder-subject-select" style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.25rem;">Active Module:</label>
+                <select id="folder-subject-select" style="background: var(--color-bg-dark); color: #fff; border: 1px solid var(--color-border); padding: 0.5rem; border-radius: 6px; cursor: pointer; font-family: inherit; min-width: 200px;">
+                    <!-- Dynamically rendered via JS -->
+                </select>
+            </div>
+            <button id="btn-trigger-add-subject" class="btn-primary" style="padding: 0.5rem 0.75rem; height: 38px;">➕ Add Module</button>
+        </div>
+    </div>
+
+    <!-- Hidden Sub-Form to add new subjects dynamically -->
+    <div id="add-subject-modal-row" class="hidden" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; border: 1px dashed var(--color-border); display: flex; gap: 1rem; align-items: center;">
+        <input type="text" id="new-subject-name-input" placeholder="e.g., Mobile & Web Applications..." style="flex: 1; background: var(--color-bg-dark); border: 1px solid var(--color-border); padding: 0.5rem; color: #fff; border-radius: 4px; font-family: inherit;">
+        <button id="btn-save-new-subject" class="btn-primary" style="background: var(--color-mint-green);">Create Binder</button>
+        <button id="btn-cancel-new-subject" style="background: transparent; color: var(--color-text-muted); border: none; cursor: pointer;">Cancel</button>
+    </div>
+    
+    <div class="grid-two-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <!-- Left Column: Context-Aware Notebook -->
+        <div class="sub-card" style="background: var(--color-bg-dark); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--color-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h3 style="margin: 0;">📝 Subject Notebook</h3>
+                <span id="active-subject-badge" style="font-size: 0.75rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: bold;">Loading...</span>
+            </div>
+            <textarea id="folder-notes-input" placeholder="Type out assignment parameters, research breakdowns, or code syntax specific to this course track..." style="width: 100%; height: 250px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid var(--color-border); padding: 0.75rem; border-radius: 6px; resize: none; font-family: inherit; line-height: 1.5;"></textarea>
+            <button id="btn-save-notes" class="btn-primary" style="margin-top: 0.75rem; width: 100%;">Save Notebook Changes</button>
+        </div>
+
+        <!-- Right Column: Interactive Document Repositories -->
+        <div class="sub-card" style="background: var(--color-bg-dark); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--color-border);">
+            <h3>📤 Upload Course Materials</h3>
+            <div class="file-drop-zone" style="border: 2px dashed var(--color-border); border-radius: 6px; padding: 2rem; text-align: center; margin-top: 0.5rem; cursor: pointer;">
+                <input type="file" id="folder-file-uploader" multiple style="display: none;">
+                <p id="upload-prompt-text" style="margin: 0; color: #94a3b8;">Click here to upload code, PDFs, or research notes</p>
+            </div>
+            
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Repository Files (<span id="file-count">0</span>) - <span style="font-size:0.75rem; color:var(--color-primary);">Click name to view</span></h4>
+            <ul id="uploaded-files-list" style="list-style: none; padding: 0; margin: 0; max-height: 140px; overflow-y: auto;">
+                <!-- Dynamically populated files go here -->
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,223 @@
+/* ==========================================================================
+   ACHIE SPLIT-PANEL LOGIN & SIGNUP PORTAL STYLES
+   ========================================================================== */
+.auth-body {
+    background-color: var(--bg-primary);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-container {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    height: 600px;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin: 20px;
+}
+
+.auth-branding {
+    flex: 1;
+    background: linear-gradient(135deg, var(--color-slate-dark), var(--color-slate-light));
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;   
+    align-items: flex-start;  /* Keeps the text containers left-aligned */
+    justify-content: center;  
+    padding: 50px;            
+    position: relative;
+    overflow: hidden;
+}
+
+.branding-content { 
+    max-width: 360px; 
+    z-index: 2; 
+    text-align: left;         /* Text lines up nicely on the left */
+    /* Extra bottom space so the text doesn't clash with the centered mascot */
+    margin-bottom: 120px; 
+}
+
+.logo-text { 
+    font-size: 3rem; 
+    font-weight: 700; 
+    letter-spacing: -1px; 
+    margin-bottom: 5px; 
+}
+
+.tagline { 
+    font-size: 1.1rem; 
+    color: var(--color-mint-green); 
+    font-weight: 500; 
+    text-transform: uppercase; 
+    margin-bottom: 20px; 
+}
+
+.description { 
+    color: #cbd5e1; 
+    font-size: 0.95rem; 
+    line-height: 1.5;         
+}
+
+/* Mascot Peeking Layout Anchor */
+.mascot-peek {
+    position: absolute;
+    bottom: 0;                /* Aligns the flat bottom of the image to the frame edge */
+    left: 50%;                /* CENTERS ONLY THE MASCOT: Shifts start point to center */
+    width: 260px;            
+    height: auto;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 1;
+    
+    /* Combines the horizontal centering trick with our vertical peek spacing */
+    transform: translateX(-50%) translateY(20px); 
+    transition: transform var(--transition-fast);
+}
+
+/* Hover effect updates - maintains horizontal center while sliding upward */
+.auth-branding:hover .mascot-peek { 
+    transform: translateX(-50%) translateY(0px) scale(1.02); 
+}
+
+/* Right Panel Elements */
+.auth-forms {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.form-box { 
+    width: 100%; 
+    max-width: 340px; 
+}
+
+.form-box h2 { 
+    font-size: 1.75rem; 
+    color: var(--color-slate-dark); 
+    margin-bottom: 5px; 
+}
+
+.form-subtitle { 
+    font-size: 0.9rem; 
+    color: var(--color-text-muted); 
+    margin-bottom: 30px; 
+}
+
+.input-group { 
+    margin-bottom: 20px; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.input-group label { 
+    font-size: 0.85rem; 
+    font-weight: 500; 
+    margin-bottom: 6px; 
+    color: var(--color-slate-light); 
+}
+
+.input-group input { 
+    padding: 12px 16px; 
+    border: 1.5px solid #e2e8f0; 
+    border-radius: 8px; 
+    font-family: inherit; 
+    font-size: 0.95rem; 
+    outline: none; 
+    transition: border-color var(--transition-fast); 
+}
+
+.input-group input:focus { 
+    border-color: var(--color-mint-green); 
+}
+
+.btn { 
+    display: block; 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    border-radius: 8px; 
+    font-family: inherit; 
+    font-size: 1rem; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all var(--transition-fast); 
+    text-align: center; 
+    margin-top: 25px; 
+}
+
+.btn-primary { 
+    background-color: var(--color-mint-green); 
+    color: var(--color-white); 
+}
+
+.btn-primary:hover { 
+    background-color: var(--color-mint-dark); 
+}
+
+.btn-primary:active { 
+    transform: scale(0.98); 
+}
+
+.switch-form-text { 
+    text-align: center; 
+    font-size: 0.85rem; 
+    color: var(--color-text-muted); 
+    margin-top: 20px; 
+}
+
+.switch-form-text a { 
+    color: var(--color-mint-dark); 
+    text-decoration: none; 
+    font-weight: 600; 
+}
+
+.switch-form-text a:hover { 
+    text-decoration: underline; 
+}
+
+/* Responsive Breakpoint */
+@media (max-width: 768px) {
+    .auth-container { 
+        flex-direction: column; 
+        height: auto; 
+        max-width: 450px; 
+        margin: 15px; 
+    }
+    
+    .auth-branding { 
+        padding: 50px 30px 180px 30px; 
+        align-items: center;           
+    }
+    
+    .branding-content { 
+        max-width: 100%; 
+        text-align: center;            
+        margin-bottom: 0;
+    }
+    
+    .logo-text { 
+        font-size: 2.2rem; 
+    }
+    
+    .mascot-peek { 
+        width: 180px; 
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(15px);  
+    }
+    
+    .auth-branding:hover .mascot-peek {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    .auth-forms { 
+        padding: 35px 25px; 
+    }
+}

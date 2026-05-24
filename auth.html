@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACHIE - Student Gateway</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-body">
+
+    <main class="auth-container">
+        <section class="auth-branding">
+            <div class="branding-content">
+                <h1 class="logo-text">ACHIE</h1>
+                <p class="tagline">Academics with Health in Mind</p>
+                <p class="description">
+                    Your companion in balancing academic responsibilities while taking care of your mental well-being.
+                </p>
+            </div>
+            <img src="img/achie-head2.png" alt="ACHIE Mascot" class="mascot-peek">
+        </section>
+
+        <section class="auth-forms">
+            
+            <div class="form-box" id="login-box">
+                <h2>Welcome Back</h2>
+                <p class="form-subtitle">Log in to sync with your ACHIE companion</p>
+                
+                <form id="form-login" onsubmit="return false;">
+                    <div class="input-group">
+                        <label for="login-email">Student Email</label>
+                        <input type="email" id="login-email" placeholder="e.g., student@nu-moa.edu.ph" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="btn-login">Log In</button>
+                </form>
+                
+                <p class="switch-form-text">
+                    New to ACHIE? <a href="#" id="link-to-signup">Create an account</a>
+                </p>
+            </div>
+
+            <div class="form-box hidden" id="signup-box">
+                <h2>Get Started</h2>
+                <p class="form-subtitle">Begin your balanced academic journey</p>
+                
+                <form id="form-signup" onsubmit="return false;">
+                    <div class="input-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signup-email">Student Email</label>
+                        <input type="email" id="signup-email" placeholder="e.g., student@nu-moa.edu.ph" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a strong password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="btn-signup">Sign Up</button>
+                </form>
+                
+                <p class="switch-form-text">
+                    Already have an account? <a href="#" id="link-to-login">Log In</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

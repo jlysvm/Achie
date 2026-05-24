@@ -1,0 +1,760 @@
+/* ==========================================================================
+   ACHIE SYSTEM TOKENS & RESPONSIVE LAYOUT VARIABLES
+   ========================================================================== */
+:root {
+    /* Layout Sizing Definitions */
+    --sidebar-wide: 260px;
+    --sidebar-narrow: 76px;
+    
+    /* Animation Interp Properties */
+    --transition-fast: 0.2s;
+    --transition-sidebar: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius: 12px;
+
+    /* Theme Color System Variables */
+    --color-white: #ffffff;
+    --color-slate-dark: #1e293b;
+    --color-slate-light: #334155;
+    --color-mint-green: #10b981;
+    --color-mint-dark: #059669;
+    --color-text-muted: #64748b;
+    
+    /* Academic Folder Accent Integrations */
+    --color-primary: #3b82f6;       
+    --color-primary-hover: #2563eb; 
+    --color-bg-dark-well: #f1f5f9;  /* Light contrast well matching scheduler blocks */
+    --color-border-subtle: #e2e8f0;
+}
+
+/* Global Hidden Helper Utility */
+.hidden {
+    display: none !important;
+}
+
+/* Base Level Resets Restored to prevent viewport clipping */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==========================================================================
+   ACHIE SIDEBAR SYSTEM WORKSPACE LAYOUT
+   ========================================================================== */
+.dashboard-body {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #f8fafc;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* Sidebar Structural Assembly Grid */
+.dash-sidebar {
+    width: var(--sidebar-wide);
+    background-color: var(--color-slate-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+    flex-shrink: 0;
+    z-index: 100;
+    /* Smooth transition for shrinking/expanding */
+    transition: width var(--transition-sidebar), padding var(--transition-sidebar);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar-logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: -0.5px;
+    margin-bottom: 40px;
+    padding-left: 12px;
+    transition: opacity var(--transition-fast), display var(--transition-fast);
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+}
+
+.menu-item:hover, .menu-item.active {
+    background-color: var(--color-slate-light);
+    color: var(--color-white);
+}
+
+.menu-icon {
+    font-size: 1.1rem;
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Sidebar Log Out Button Anchor */
+.btn-sidebar-logout {
+    width: 100%;
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-sidebar-logout:hover {
+    background-color: #ef4444;
+    color: var(--color-white);
+}
+
+/* --- COLLAPSED SIDEBAR SYSTEM MODIFIERS --- */
+.dash-sidebar.collapsed {
+    width: var(--sidebar-narrow);
+    padding: 30px 12px; /* Tightens padding to center icons safely */
+}
+
+/* Hide labels and typography headers instantly on collapse */
+.dash-sidebar.collapsed .menu-label,
+.dash-sidebar.collapsed .sidebar-logo {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}
+
+/* Recenter interactive rows when sidebar takes narrow layout */
+.dash-sidebar.collapsed .menu-item,
+.dash-sidebar.collapsed .btn-sidebar-logout {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.dash-sidebar.collapsed .sidebar-header-row {
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+/* Flip the side directional vector arrow inside the button */
+.dash-sidebar.collapsed #sidebar-toggle {
+    transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   MAIN DASHBOARD WORKSPACE MODULE FRAMES
+   ========================================================================== */
+.dash-content-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-header {
+    background-color: var(--color-white);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.content-header h2 {
+    font-size: 1.5rem;
+    color: var(--color-slate-dark);
+}
+
+.global-rewards-badge {
+    background-color: var(--color-slate-dark);
+    color: var(--color-mint-green);
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Interactive Component Sections Grid Frame */
+.view-scroll-wrapper {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.dashboard-section {
+    animation: viewFadeIn 0.3s ease;
+}
+
+.section-card {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+}
+
+.section-card h3 {
+    font-size: 1.3rem;
+    color: var(--color-slate-dark);
+    margin-bottom: 4px;
+}
+
+.section-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+}
+
+/* ==========================================================================
+   SECTION 1: HOME CHARACTER INTERACTIVE CONTAINER STYLES
+   ========================================================================== */
+.home-interactive-container {
+    display: flex;
+    min-height: 480px;
+    position: relative;
+    padding: 40px;
+    background: linear-gradient(135deg, var(--color-white) 0%, #fdfdfd 100%);
+    overflow: hidden;
+}
+
+.home-speech-column {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-right: 20px;
+    z-index: 2;
+}
+
+.achie-bubble-wrapper {
+    margin-top: 30px;
+    position: relative;
+    max-width: 520px;
+}
+
+.achie-speech-bubble {
+    background-color: var(--color-slate-dark);
+    color: var(--color-white);
+    padding: 24px 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(43, 66, 87, 0.08);
+}
+
+.achie-speech-bubble p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.bubble-pointer {
+    position: absolute;
+    top: 35px;
+    right: -12px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 14px solid var(--color-slate-dark);
+}
+
+.home-mascot-column {
+    flex: 0.8;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    position: relative;
+}
+
+/* Scaling container bounding the huge base file assets safely */
+.achie-interactive-btn {
+    background: transparent;
+    border: none;
+    padding: 0; margin: 0;
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    bottom: -40px;
+    right: -20px;
+    width: 340px;
+    height: 340px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+}
+
+.achie-full-body-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.06));
+    transition: filter var(--transition-fast);
+}
+
+.achie-interactive-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+.achie-interactive-btn:hover .achie-full-body-img {
+    filter: drop-shadow(0 15px 20px rgba(92, 203, 148, 0.15));
+}
+
+.achie-interactive-btn.talking {
+    animation: achieBounceSpeak 0.5s ease infinite alternate;
+}
+
+@keyframes achieBounceSpeak {
+    0% { transform: scale(0.98) translateY(0); }
+    100% { transform: scale(1.03) translateY(-8px); }
+}
+
+/* ==========================================================================
+   SECTION 2: THE ADAPTIVE WORKLOAD PLANNER (DYNAMIC SYLLABUS) STYLES
+   ========================================================================== */
+.energy-checkin-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(to right, var(--color-white), #f8fafc);
+    border-left: 5px solid var(--color-slate-light);
+}
+.checkin-header-text .section-subtitle { margin-bottom: 0; }
+
+.energy-toggle-group {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-energy {
+    background-color: var(--color-white);
+    border: 2px solid #e2e8f0;
+    color: var(--color-slate-dark);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition-fast);
+}
+
+/* Energy Button Active Interaction States */
+.btn-energy.high:hover, .btn-energy.high.active {
+    background-color: #fef9c3; border-color: #eab308; color: #854d0e;
+}
+.btn-energy.medium:hover, .btn-energy.medium.active {
+    background-color: #e0f2fe; border-color: #0284c7; color: #075985;
+}
+.btn-energy.low:hover, .btn-energy.low.active {
+    background-color: #d1fae5; border-color: var(--color-mint-green); color: #065f46;
+}
+
+/* Header Badge Indicators */
+.task-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.task-block-header h3 { margin-bottom: 0 !important; }
+
+.energy-badge {
+    padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+}
+.state-high { background-color: #fef9c3; color: #854d0e; }
+.state-medium { background-color: #e0f2fe; color: #075985; }
+.state-low { background-color: #d1fae5; color: #065f46; }
+
+/* Custom Selection Inputs inside Task Row */
+.task-select-tag {
+    padding: 0 12px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: var(--color-white);
+    font-family: inherit;
+    color: var(--color-slate-dark);
+    outline: none;
+    cursor: pointer;
+}
+
+/* Task Item Custom Tag Decorators */
+.item-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+.tag-heavy { background-color: #fee2e2; color: #991b1b; }
+.tag-medium { background-color: #f1f5f9; color: var(--color-slate-dark); }
+.tag-light { background-color: #f0fdf4; color: #166534; }
+
+/* Dimming/softening styling rules for heavy tasks on low energy days */
+.task-item.deferred-faded {
+    opacity: 0.4;
+    border-left: 4px dashed #ef4444;
+    filter: grayscale(40%);
+}
+.defer-notice {
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    margin-left: auto;
+    padding-right: 12px;
+}
+
+.scheduler-split-container {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+}
+
+.task-input-row { display: flex; gap: 12px; margin-bottom: 20px; }
+.task-input-row input { flex: 1; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; outline: none; }
+.task-input-row input:focus { border-color: var(--color-mint-green); }
+.btn-add-task { background-color: var(--color-slate-dark); color: var(--color-white); border: none; padding: 0 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+.task-list { list-style: none; }
+.task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background-color: #f1f5f9; border-radius: 8px; margin-bottom: 10px; }
+.task-item-left { display: flex; align-items: center; gap: 12px; }
+.btn-delete-task { background: transparent; border: none; color: #ef4444; cursor: pointer; font-weight: 600; }
+
+.pomodoro-display-box { background-color: #f1f5f9; border-radius: var(--border-radius); padding: 40px; text-align: center; }
+.timer-digits { font-size: 3.5rem; font-weight: 700; color: var(--color-slate-dark); font-variant-numeric: tabular-nums; margin-bottom: 20px; }
+.timer-controls { display: flex; justify-content: center; gap: 12px; }
+.btn-timer { background-color: var(--color-mint-green); color: var(--color-white); border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background-color var(--transition-fast); }
+.btn-timer:hover { background-color: var(--color-mint-dark); }
+.btn-timer-reset { background-color: #cbd5e1; color: var(--color-slate-dark); }
+.btn-timer-reset:hover { background-color: #94a3b8; }
+
+/* Placeholder Wireframe Utility */
+.placeholder-wireframe {
+    border: 2px dashed #cbd5e1;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   SECTION 4: ANALYTICS & PROGRESS INSIGHT STYLES (NEW DEEP CONTRAST TOKENS)
+   ========================================================================== */
+.analytics-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.metric-card {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.metric-icon {
+    font-size: 2.2rem;
+    background-color: #f8fafc;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.metric-info h4 {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.metric-info p {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-slate-dark);
+    line-height: 1.1;
+}
+
+.metric-info span {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    display: block;
+    margin-top: 2px;
+}
+
+/* High Contrast Workload Distribution Bar Elements */
+.distribution-bar-wrapper {
+    display: flex;
+    height: 18px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #cbd5e1;
+    margin: 20px 0;
+}
+
+.dist-segment {
+    height: 100%;
+    transition: width var(--transition-sidebar);
+}
+
+/* Enforcing strong primary shades */
+.dist-segment.tag-heavy, .legend-dot.tag-heavy {
+    background-color: #ff7b7b !important; /* Crimson Red */
+}
+.dist-segment.tag-medium, .legend-dot.tag-medium {
+    background-color: #ffb663 !important; /* Amber Orange */
+}
+.dist-segment.tag-light, .legend-dot.tag-light {
+    background-color: #82ff96 !important; /* Emerald Green */
+}
+
+.distribution-legend-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+    padding-left: 0;
+}
+
+.distribution-legend-list li {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--color-slate-dark);
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   SECTION 5: SUPPORT LAYOUT ELEMENTS
+   ========================================================================== */
+.support-panel-content { max-width: 600px; }
+.support-panel-content p { color: var(--color-text-muted); margin-bottom: 24px; }
+.btn-connect { background-color: var(--color-mint-green); color: var(--color-white); border: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background-color var(--transition-fast); }
+.btn-connect:hover { background-color: var(--color-mint-dark); }
+
+/* ==========================================================================
+   SHARED OVERLAYS & DIALOG MODULES (Modals)
+   ========================================================================== */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 999; }
+.modal-box { background-color: var(--color-white); width: 90%; max-width: 440px; border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+.modal-header { background-color: var(--color-slate-dark); color: var(--color-white); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+.modal-close-btn { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+.modal-body { padding: 30px; text-align: center; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+
+.spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--color-mint-green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto; }
+.success-icon { width: 50px; height: 50px; background-color: #d1fae5; color: #44eb5d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 16px auto; }
+
+/* ==========================================================================
+   ACADEMIC FOLDER SPECIFIC INTERFACE STYLES (SHARED THEME ALIGNED)
+   ========================================================================== */
+.animate-fade-in {
+    animation: viewFadeIn 0.4s ease-out forwards;
+}
+
+/* Base Shared Utility Action Buttons for Forms */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Custom Dropdown Selector styling properties */
+.subject-selector-wrapper select {
+    transition: var(--transition-fast);
+    outline: none;
+}
+
+.subject-selector-wrapper select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Dynamic Active Badges tracking tabs */
+#active-subject-badge {
+    transition: var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Form Input Notebook Textareas */
+#folder-notes-input {
+    transition: var(--transition-fast);
+    outline: none;
+    border: 1.5px solid var(--color-border-subtle);
+}
+
+#folder-notes-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* File Drop Zone upload element wrappers */
+.file-drop-zone {
+    transition: var(--transition-fast);
+    background-color: var(--color-bg-dark-well);
+}
+
+.file-drop-zone:hover {
+    background-color: rgba(59, 130, 246, 0.04);
+    border-color: var(--color-primary) !important;
+}
+
+.file-drop-zone:hover p {
+    color: var(--color-slate-dark) !important;
+}
+
+/* Repository Entry Rows inside list templates */
+#uploaded-files-list li {
+    border: 1px solid transparent;
+    transition: var(--transition-fast);
+}
+
+#uploaded-files-list li:hover {
+    background-color: rgba(30, 41, 59, 0.05) !important;
+    border-color: var(--color-border-subtle);
+}
+
+.file-download-link {
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.file-download-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+.btn-delete-file {
+    transition: var(--transition-fast);
+    opacity: 0.6;
+    padding: 0 0.25rem;
+}
+
+.btn-delete-file:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+/* Clean Custom Webkit Scrollbars for long file listings */
+#uploaded-files-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#uploaded-files-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#uploaded-files-list::-webkit-scrollbar-thumb {
+    background: var(--color-border-subtle);
+    border-radius: 3px;
+}
+
+#uploaded-files-list::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   ANIMATIONS & MEDIA RESPONSIVE SYSTEM BREAKPOINTS
+   ========================================================================== */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes viewFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 1024px) {
+    .scheduler-split-container { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+    .analytics-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 850px) {
+    .energy-checkin-card { flex-direction: column; align-items: flex-start; }
+    .energy-toggle-group { width: 100%; }
+    .btn-energy { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 768px) {
+    .home-interactive-container { flex-direction: column; min-height: auto; padding-bottom: 260px; }
+    .home-speech-column { padding-right: 0; }
+    .bubble-pointer {
+        top: auto; bottom: -12px; right: 60px;
+        border-left: 12px solid transparent; border-right: 12px solid transparent;
+        border-top: 14px solid var(--color-slate-dark);
+    }
+    .achie-interactive-btn { width: 240px; height: 240px; right: 50%; transform: translateX(50%); bottom: -20px; }
+    .achie-interactive-btn:hover { transform: translateX(50%) translateY(-2px); }
+    
+    /* Academic Folder Tablet Stack Layouts */
+    .grid-two-columns {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    .subject-selector-wrapper, .subject-selector-wrapper select {
+        width: 100%;
+    }
+}

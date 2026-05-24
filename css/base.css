@@ -1,0 +1,39 @@
+/* ==========================================================================
+   ACHIE SYSTEM BASE UTILITIES & RESET
+   ========================================================================== */
+html {
+    scroll-behavior: smooth; /* Enables native browser smooth scrolling */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Main Design Tokens matching the ACHIE concept art theme */
+    --bg-primary: #f4f7f6;
+    --color-slate-dark: #2b4257;
+    --color-slate-light: #4a627a;
+    --color-mint-green: #5ccb94;
+    --color-mint-dark: #46b37c;
+    --color-white: #ffffff;
+    --color-text-dark: #1e293b;
+    --color-text-muted: #64748b;
+    
+    /* Global Layout Properties */
+    --border-radius: 12px;
+    --transition-fast: 0.25s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text-dark);
+    line-height: 1.6;
+}
+
+/* Common Helper Utility Classes */
+.hidden {
+    display: none !important;
+}

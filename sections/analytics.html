@@ -1,0 +1,73 @@
+<div class="dashboard-section">
+    <div class="section-card">
+        <div class="task-block-header">
+            <div>
+                <h3>Personal Growth & Analytics</h3>
+                <p class="section-subtitle">A holistic view of your academic momentum and energy management.</p>
+            </div>
+            <div class="global-rewards-badge">
+                <span>🏆 Total Score:</span>
+                <span id="analytics-points-display">0</span><span> XP</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="analytics-metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon" style="color: var(--color-mint-green);">⚡</div>
+            <div class="metric-info">
+                <h4>Focus Velocity</h4>
+                <p id="metric-completion-rate">0%</p>
+                <span>Tasks completed vs. added</span>
+            </div>
+        </div>
+        <!-- UPDATED CARD FUNCTION/LABELS -->
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #dc2626;">🛡️</div>
+            <div class="metric-info">
+                <h4>Energy Interventions</h4>
+                <p id="metric-deferred-count">0</p>
+                <span>Heavy loads safely deferred</span>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #d97706;">⏱️</div>
+            <div class="metric-info">
+                <h4>Focus Sessions</h4>
+                <p id="metric-pomo-count">0</p>
+                <span>Completed pomodoros</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribution & Activity Breakdown -->
+    <div class="scheduler-split-container" style="margin-top: 24px;">
+        <!-- Left Box: Workload Intensity Distribution -->
+        <div class="section-card" style="margin-bottom: 0;">
+            <h3>Workload Balance Matrix</h3>
+            <p class="section-subtitle" style="margin-bottom: 16px;">How your current task database scales across mental capacities:</p>
+            <div class="distribution-bar-wrapper">
+                <div id="dist-bar-heavy" class="dist-segment tag-heavy" style="width: 0%;"></div>
+                <div id="dist-bar-medium" class="dist-segment tag-medium" style="width: 0%;"></div>
+                <div id="dist-bar-light" class="dist-segment tag-light" style="width: 0%;"></div>
+            </div>
+            <ul class="distribution-legend-list">
+                <li><span class="legend-dot tag-heavy"></span> Heavy Focus Intensity: <strong id="legend-count-heavy">0</strong></li>
+                <li><span class="legend-dot tag-medium"></span> Moderate Capacity: <strong id="legend-count-medium">0</strong></li>
+                <li><span class="legend-dot tag-light"></span> Low Friction / Routine: <strong id="legend-count-light">0</strong></li>
+            </ul>
+        </div>
+
+        <!-- Right Box: Motivational Insight -->
+        <div class="section-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0;">
+            <div style="text-align: center; padding: 10px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🌱</div>
+                <h4>Achie's Perspective</h4>
+                <p id="analytics-insight-text" style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.4; margin-top: 8px; font-style: italic;">
+                    "Loading up your latest performance tracks to calculate your personalized balance insights..."
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

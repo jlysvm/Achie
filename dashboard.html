@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACHIE Dashboard - Workspace Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- COLLAPSIBLE SIDEBAR NAVIGATION -->
+    <aside class="dash-sidebar" id="main-sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-header-row" style="display: flex; align-items: center; justify-content: space-between; padding: 0 16px; margin-bottom: 24px;">
+                <div class="sidebar-logo" style="font-size: 1.5rem; font-weight: 700; color: white;">ACHIE</div>
+                <!-- Sidebar Toggle Trigger Button -->
+                <button id="sidebar-toggle" class="btn-toggle-sidebar" style="background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1.1rem; transition: transform 0.3s ease; padding: 4px 8px;">◀</button>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-target="home">
+                    <span class="menu-icon">🏠</span> 
+                    <span class="menu-label">Home</span>
+                </a>
+                <a href="#" class="menu-item" data-target="scheduler">
+                    <span class="menu-icon">📅</span> 
+                    <span class="menu-label">Scheduler & Timer</span>
+                </a>
+                <a href="#" class="menu-item" data-target="analytics">
+                    <span class="menu-icon">📊</span> 
+                    <span class="menu-label">Analytics & Progress</span>
+                </a>
+                <a href="#" class="menu-item" data-target="folder">
+                    <span class="menu-icon">📁</span> 
+                    <span class="menu-label">Academic Folder</span>
+                </a>
+                <a href="#" class="menu-item" data-target="support">
+                    <span class="menu-icon">🤝</span> 
+                    <span class="menu-label">Professional Support</span>
+                </a>
+            </nav>
+        </div>
+        
+        <div class="sidebar-bottom">
+            <button class="btn-sidebar-logout" id="btn-logout">
+                <span class="menu-icon">🚪</span> 
+                <span class="menu-label">Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT VIEWPORT CONTAINER -->
+    <main class="dash-content-frame">
+        <!-- Shared Persistent Header -->
+        <header class="content-header">
+            <div class="header-welcome">
+                <h2>Welcome back, <span id="student-name" class="highlight-text">Student</span>!</h2>
+            </div>
+            <div class="global-rewards-badge">
+                <span class="badge-icon">⚡</span> <span id="rewards-points">0</span> XP
+            </div>
+        </header>
+
+        <!-- Dynamic Injection Window -->
+        <div class="view-scroll-wrapper" id="dynamic-content-root">
+            <!-- Separate section components are dynamically injected here by Javascript -->
+        </div>
+    </main>
+
+    <!-- SHARED OVERLAY INTERFACES -->
+    <div class="modal-overlay hidden" id="counselor-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>ACHIE Secure Link</h3>
+                <button class="modal-close-btn" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="loading-spinner-container" id="modal-loading-state">
+                    <div class="spinner"></div>
+                    <p>Establishing encrypted endpoint to Student Guidance Desk...</p>
+                </div>
+                <div class="connection-success-state hidden" id="modal-success-state">
+                    <div class="success-icon">✓</div>
+                    <h4>Room Verified</h4>
+                    <p>Line established successfully. An advisor will message you in a separate window momentarily.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
