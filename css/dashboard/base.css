@@ -1,0 +1,39 @@
+/* ==========================================================================
+   ACHIE SYSTEM TOKENS & BASE NORMALIZATION
+   ========================================================================== */
+:root {
+    /* Layout Sizing Definitions */
+    --sidebar-wide: 260px;
+    --sidebar-narrow: 76px;
+    
+    /* Animation Interp Properties */
+    --transition-fast: 0.2s;
+    --transition-sidebar: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius: 12px;
+
+    /* Theme Color System Variables */
+    --color-white: #ffffff;
+    --color-slate-dark: #1e293b;
+    --color-slate-light: #334155;
+    --color-mint-green: #10b981;
+    --color-mint-dark: #059669;
+    --color-text-muted: #64748b;
+    
+    /* Academic Folder Accent Integrations */
+    --color-primary: #3b82f6;       
+    --color-primary-hover: #2563eb; 
+    --color-bg-dark-well: #f1f5f9;
+    --color-border-subtle: #e2e8f0;
+}
+
+/* Base Level Resets */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Global Hidden Helper Utility */
+.hidden {
+    display: none !important;
+}
