@@ -24,6 +24,7 @@
     --color-primary-hover: #2563eb; 
     --color-bg-dark-well: #f1f5f9;
     --color-border-subtle: #e2e8f0;
+    --color-border: rgb(104, 104, 104);
 }
 
 /* Base Level Resets */
