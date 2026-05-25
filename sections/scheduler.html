@@ -13,7 +13,7 @@
                 <span class="energy-icon">⚖️</span> Medium Energy
             </button>
             <button type="button" class="btn-energy low" data-energy="low">
-                <span class="energy-icon">🌱</span> Low Friction
+                <span class="energy-icon">🌱</span> Easy Going
             </button>
         </div>
     </div>
@@ -22,13 +22,13 @@
         <!-- Left: Adaptive Tasks System Workspace -->
         <div class="section-card task-card-block">
             <div class="task-block-header">
-                <h3 id="adaptive-planner-title">Balanced Focus Stream</h3>
-                <span class="energy-badge state-medium" id="current-energy-badge">Medium State</span>
+                <h3 id="adaptive-planner-title">Steady Progress</h3>
+                <span class="energy-badge state-medium" id="current-energy-badge">Balanced</span>
             </div>
-            <p class="section-subtitle" id="adaptive-planner-desc">Steady progress. Balancing key assignments alongside standard milestones.</p>
+            <p class="section-subtitle" id="adaptive-planner-desc">Good, steady energy. Perfect for knocking out routine assignments.</p>
             
             <form id="task-form" onsubmit="return false;" class="task-input-row">
-                <input type="text" id="task-input" placeholder="Add a milestone assignment..." required>
+                <input type="text" id="task-input" placeholder="Add a major goal" required>
                 <select id="task-intensity-tag" class="task-select-tag">
                     <option value="heavy">💪 Heavy Focus</option>
                     <option value="medium" selected>📝 Moderate</option>
@@ -44,10 +44,15 @@
 
         <!-- Right: Pomodoro Engine Widget -->
         <div class="section-card timer-card-block">
-            <h3>Pomodoro Engine</h3>
+            <h3>Pomodoro Timer</h3>
             <p class="section-subtitle">Work sustainably alongside your chosen state</p>
             
-            <div class="pomodoro-display-box">
+            <div class="pomodoro-display-box" style="text-align: center;">
+                <!-- 📍 RE-LINKED POMODORO STATE TRACKER BADGE -->
+                <div id="pomo-timer-status" style="font-weight: bold; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; transition: color 0.3s ease;">
+                    Focus Session (1/4)
+                </div>
+
                 <div class="timer-digits" id="pomo-timer-display">25:00</div>
                 <div class="timer-controls">
                     <button class="btn-timer" id="btn-timer-toggle">Start</button>

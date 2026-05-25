@@ -1,23 +1,38 @@
-<div class="section-card home-interactive-container dashboard-section">
-    <!-- Left Side: Dynamic Comic Speech Bubble Container -->
-    <div class="home-speech-column">
-        <div class="welcome-banner">
-            <h3>Your Companion Workspace</h3>
-            <p class="section-subtitle">Need a quick boost? Tap ACHIE over on the right for a word of advice!</p>
+<div class="dashboard-section">
+    
+    <!-- ⏱️ TRANSPARENT UPPER-LEFT CLOCK & DATE WIDGET TRACK -->
+    <div style="margin-bottom: 1rem; padding-left: 4px;">
+        <div id="home-clock-display" style="font-size: 1.8rem; font-weight: bold; font-family: monospace; letter-spacing: 0.02em; color: var(--color-mint-green); line-height: 1;">
+            00:00:00 AM
         </div>
-        
-        <div class="achie-bubble-wrapper">
-            <div class="achie-speech-bubble">
-                <p id="achie-quote">"Hi there! I'm ACHIE, your well-being companion. Click on me anytime you need a breather or some quick motivation!"</p>
-            </div>
-            <div class="bubble-pointer"></div>
+        <div id="home-date-display" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-top: 0.35rem; font-weight: 500;">
+            Loading Date...
         </div>
     </div>
 
-    <!-- Right Side: Grounded Full Body ACHIE Asset Trigger -->
-    <div class="home-mascot-column">
-        <button type="button" class="achie-interactive-btn" id="achie-mascot-trigger" aria-label="Talk to ACHIE">
-            <img src="img/achie-full-body.png" alt="ACHIE Companion" class="achie-full-body-img" id="achie-mascot-img">
-        </button>
+    <!-- Main Content Panel Area -->
+    <div class="section-card home-interactive-container" style="margin-top: 0;">
+        <!-- Left Side: Dynamic Comic Speech Bubble Container -->
+        <div class="home-speech-column">
+            <div class="welcome-banner">
+                <h3 id="home-greeting-title">Your Companion Workspace</h3>
+                <p class="section-subtitle">Need a quick boost? Tap ACHIE over on the right for a word of advice!</p>
+            </div>
+            
+            <div class="achie-bubble-wrapper">
+                <div class="achie-speech-bubble">
+                    <p id="achie-quote">"Hi there! I'm ACHIE, your well-being companion. Click on me anytime you need a breather or some quick motivation!"</p>
+                </div>
+                <div class="bubble-pointer"></div>
+            </div>
+        </div>
+
+        <!-- Right Side: Grounded Full Body ACHIE Asset Trigger -->
+        <div class="home-mascot-column">
+            <button type="button" class="achie-interactive-btn" id="achie-mascot-trigger" aria-label="Talk to ACHIE">
+                <img src="img/achie-full-body.png" alt="ACHIE Companion" class="achie-full-body-img" id="achie-mascot-img">
+            </button>
+        </div>
     </div>
+
 </div>

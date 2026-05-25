@@ -30,10 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 4, text: "Draft reply emails to project teammates", intensity: "light", completed: false }
     ];
 
-    // Global mascot & functional tracker configurations
+// Global mascot & functional tracker configurations
     let isTalking = false;
     let pomoTimerInterval = null;
     let pomoSecondsRemaining = 25 * 60; // Default 25-minute baseline session track
+    let homeClockInterval = null; // Background loop engine for date & time
+
+    // PERSISTENT POMODORO STATES
+    let pomoCurrentMode = 'work';       // 'work', 'short-break', 'long-break'
+    let pomoCompletedCycles = 0;        // Tracks completed cycles globally
+    const POMO_DURATIONS = {
+        'work': 25 * 60,
+        'short-break': 5 * 60,
+        'long-break': 15 * 60
+    };
 
 
     /* ==========================================================================
@@ -66,9 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSection(sectionName) {
         try {
-            // Drop current intervals immediately when exiting target panel space to avoid drift execution leaks
-            clearInterval(pomoTimerInterval);
-            pomoTimerInterval = null;
+            // REMOVED: clearInterval(pomoTimerInterval) so the timer keeps ticking!
 
             const response = await fetch(`sections/${sectionName}.html`);
             if (!response.ok) throw new Error(`Could not load section: ${sectionName}`);
@@ -80,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sectionName === 'scheduler') initAdaptiveScheduler();
             if (sectionName === 'analytics') initAnalyticsDashboard();
             if (sectionName === 'support') initSupportModalHooks();
-            if (sectionName === 'folder') initResourceFolder(); // Triggers updated resource folder engine logic
+            if (sectionName === 'folder') initResourceFolder();
 
         } catch (error) {
             console.error("Component initialization mapping error:", error);
@@ -99,12 +107,122 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    function startGlobalPomoTicker() {
+        // Prevent duplicate loops from spawning
+        if (pomoTimerInterval) return;
+
+        pomoTimerInterval = setInterval(() => {
+            if (pomoSecondsRemaining > 0) {
+                pomoSecondsRemaining--;
+                
+                // Real-time Update: If the student is actively viewing the scheduler, refresh the digits live
+                const timerDisplayField = document.getElementById('pomo-timer-display');
+                if (timerDisplayField) {
+                    const minutes = Math.floor(pomoSecondsRemaining / 60);
+                    const seconds = pomoSecondsRemaining % 60;
+                    timerDisplayField.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            } else {
+                // If it hits zero, trigger the completion handler
+                handleGlobalSessionCompletion();
+            }
+        }, 1000);
+    }
+
+    function startGlobalHomeClock() {
+        // Stop any old loops from running to prevent ticking duplicates
+        if (homeClockInterval) clearInterval(homeClockInterval);
+
+        function refreshTimeLayout() {
+            const clockField = document.getElementById('home-clock-display');
+            const dateField = document.getElementById('home-date-display');
+            const greetingField = document.getElementById('home-greeting-title');
+            
+            // If the element isn't currently loaded on screen, don't waste system processing power
+            if (!clockField && !dateField) return;
+
+            const now = new Date();
+
+            // 1. Calculate Standard 12-Hour Time string with seconds
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Change '0' string to '12'
+            const formattedHours = hours.toString().padStart(2, '0');
+
+            if (clockField) {
+                clockField.innerText = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+            }
+
+            // 2. Generate Readable Calendar Date String
+            if (dateField) {
+                const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+                dateField.innerText = now.toLocaleDateString('en-US', options);
+            }
+
+            // 3. Dynamic contextual student greeting text modification
+            if (greetingField) {
+                const currentHour = now.getHours();
+                if (currentHour < 12) {
+                    greetingField.innerText = "Good Morning, Student!";
+                } else if (currentHour < 18) {
+                    greetingField.innerText = "Good Afternoon, Student!";
+                } else {
+                    greetingField.innerText = "Good Evening, Student!";
+                }
+            }
+        }
+
+        // Fire instantly on load so there is zero layout blink delay
+        refreshTimeLayout();
+        homeClockInterval = setInterval(refreshTimeLayout, 1000);
+    }
+
+    function handleGlobalSessionCompletion() {
+        clearInterval(pomoTimerInterval);
+        pomoTimerInterval = null;
+
+        if (pomoCurrentMode === 'work') {
+            pomoCompletedCycles++;
+            totalCompletedPomodoros++; 
+            currentXP += 50;           
+            
+            const pointsDisplay = document.getElementById('rewards-points');
+            if (pointsDisplay) pointsDisplay.innerText = currentXP;
+
+            if (pomoCompletedCycles % 4 === 0) {
+                pomoCurrentMode = 'long-break';
+                alert("4 Focus Sessions Complete! Take a well-deserved 15-minute long break.");
+            } else {
+                pomoCurrentMode = 'short-break';
+                alert("Focus session complete! Time for a quick 5-minute stretch break.");
+            }
+        } else {
+            if (pomoCurrentMode === 'long-break') {
+                pomoCompletedCycles = 0; 
+            }
+            pomoCurrentMode = 'work';
+            alert("Break is over! Ready to lock back in for your next focus track?");
+        }
+
+        pomoSecondsRemaining = POMO_DURATIONS[pomoCurrentMode];
+        
+        // If they are on the scheduler page right now, update the fresh UI structure completely
+        if (document.getElementById('pomo-timer-display')) {
+            initPomodoroEngine();
+        }
+    }
+
 
     /* ==========================================================================
        III. COMPONENT INITIALIZERS (Bound post-injection)
        ========================================================================== */
 
     function initHomeMascot() {
+        startGlobalHomeClock();
         const mascotBtn = document.getElementById('achie-mascot-trigger');
         const mascotImg = document.getElementById('achie-mascot-img');
         const quoteDisplay = document.getElementById('achie-quote');
@@ -164,17 +282,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentBadge = document.getElementById('current-energy-badge');
 
             if (chosenState === 'high') {
-                if (plannerTitle) plannerTitle.innerText = "Deep-Focus Accelerator Stream";
-                if (plannerDesc) plannerDesc.innerText = "High-octane mental baseline detected. Perfect time to crush intensive tasks.";
-                if (currentBadge) { currentBadge.className = "energy-badge state-high"; currentBadge.innerText = "High Focus Active"; }
+                if (plannerTitle) plannerTitle.innerText = "High-Energy Focus";
+                if (plannerDesc) plannerDesc.innerText = "Your brainpower is at its peak. Perfect time to crush your hardest tasks.";
+                if (currentBadge) { currentBadge.className = "energy-badge state-high"; currentBadge.innerText = "Fully Charged"; }
             } else if (chosenState === 'medium') {
-                if (plannerTitle) plannerTitle.innerText = "Balanced Standard Path";
-                if (plannerDesc) plannerDesc.innerText = "Steady progress environment. Balancing routine assignments.";
-                if (currentBadge) { currentBadge.className = "energy-badge state-medium"; currentBadge.innerText = "Medium State"; }
+                if (plannerTitle) plannerTitle.innerText = "Steady Progress";
+                if (plannerDesc) plannerDesc.innerText = "Good, steady energy. Perfect for knocking out routine assignments.";
+                if (currentBadge) { currentBadge.className = "energy-badge state-medium"; currentBadge.innerText = "Balanced"; }
             } else if (chosenState === 'low') {
-                if (plannerTitle) plannerTitle.innerText = "Low-Friction Rest & Support Track";
-                if (plannerDesc) plannerDesc.innerText = "Energy reserve is low. Heavy items are systematically deferred to preserve health.";
-                if (currentBadge) { currentBadge.className = "energy-badge state-low"; currentBadge.innerText = "Tactical Rest Enabled"; }
+                if (plannerTitle) plannerTitle.innerText = "Rest & Recovery";
+                if (plannerDesc) plannerDesc.innerText = "Energy is running low. Hard tasks are paused so you can rest and avoid burnout.";
+                if (currentBadge) { currentBadge.className = "energy-badge state-low"; currentBadge.innerText = "Recharging"; }
             }
 
             renderTasks();
@@ -319,13 +437,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ==========================================================================
-       IV. POMODORO TIMER CORE CONTROLLER ENGINE
+/* ==========================================================================
+       IV. POMODORO TIMER CORE CONTROLLER ENGINE (UI Linker Edition)
        ========================================================================== */
     function initPomodoroEngine() {
         const timerToggleBtn = document.getElementById('btn-timer-toggle');
         const timerResetBtn = document.getElementById('btn-timer-reset');
         const timerDisplayField = document.getElementById('pomo-timer-display');
+        const timerStatusLabel = document.getElementById('pomo-timer-status'); 
 
         function translateDisplayDigits() {
             const minutes = Math.floor(pomoSecondsRemaining / 60);
@@ -333,72 +452,88 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timerDisplayField) {
                 timerDisplayField.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
+            updateStatusUI();
         }
 
+        function updateStatusUI() {
+            if (!timerStatusLabel) return;
+            
+            if (pomoCurrentMode === 'work') {
+                timerStatusLabel.innerText = `Focus Session (${pomoCompletedCycles + 1}/4)`;
+                timerStatusLabel.style.color = "var(--color-primary)";
+            } else if (pomoCurrentMode === 'short-break') {
+                timerStatusLabel.innerText = "Short Break";
+                timerStatusLabel.style.color = "var(--color-mint-green)";
+            } else if (pomoCurrentMode === 'long-break') {
+                timerStatusLabel.innerText = "Great Job! Long Break Time";
+                timerStatusLabel.style.color = "#3b82f6";
+            }
+        }
+
+        // Match UI Button Appearance immediately depending on background state execution
+        if (timerToggleBtn) {
+            if (pomoTimerInterval) {
+                timerToggleBtn.innerText = "Pause";
+                timerToggleBtn.style.backgroundColor = "#e11d48";
+            } else {
+                timerToggleBtn.innerText = "Start";
+                timerToggleBtn.style.backgroundColor = "var(--color-mint-green)";
+            }
+        }
+
+        // Wire Up Start / Pause Toggle Button
         if (timerToggleBtn) {
             timerToggleBtn.replaceWith(timerToggleBtn.cloneNode(true));
             const freshToggleBtn = document.getElementById('btn-timer-toggle');
 
             freshToggleBtn.addEventListener('click', () => {
                 if (pomoTimerInterval) {
+                    // Stop tracking
                     clearInterval(pomoTimerInterval);
                     pomoTimerInterval = null;
                     freshToggleBtn.innerText = "Start";
                     freshToggleBtn.style.backgroundColor = "var(--color-mint-green)";
                 } else {
+                    // Launch background engine tracker loop
                     freshToggleBtn.innerText = "Pause";
                     freshToggleBtn.style.backgroundColor = "#e11d48"; 
-
-                    pomoTimerInterval = setInterval(() => {
-                        if (pomoSecondsRemaining > 0) {
-                            pomoSecondsRemaining--;
-                            translateDisplayDigits();
-                        } else {
-                            clearInterval(pomoTimerInterval);
-                            pomoTimerInterval = null;
-                            freshToggleBtn.innerText = "Start";
-                            freshToggleBtn.style.backgroundColor = "var(--color-mint-green)";
-                            pomoSecondsRemaining = 25 * 60; 
-                            translateDisplayDigits();
-                            
-                            totalCompletedPomodoros++; 
-                            currentXP += 50; 
-                            
-                            const pointsDisplay = document.getElementById('rewards-points');
-                            if (pointsDisplay) pointsDisplay.innerText = currentXP;
-                            
-                            alert("Session Complete! Take a quick rest break, you earned it!");
-                        }
-                    }, 1000);
+                    startGlobalPomoTicker();
                 }
             });
         }
 
+        // Wire Up Manual Reset Button
         if (timerResetBtn) {
             timerResetBtn.replaceWith(timerResetBtn.cloneNode(true));
             const freshResetBtn = document.getElementById('btn-timer-reset');
 
             freshResetBtn.addEventListener('click', () => {
-                clearInterval(pomoTimerInterval);
-                pomoTimerInterval = null;
-                pomoSecondsRemaining = 25 * 60; 
-                translateDisplayDigits();
-                
-                const toggleActionLink = document.getElementById('btn-timer-toggle');
-                if (toggleActionLink) {
-                    toggleActionLink.innerText = "Start";
-                    toggleActionLink.style.backgroundColor = "var(--color-mint-green)";
+                if (confirm("Are you sure you want to reset the current session? Your progress count for this loop will restart.")) {
+                    clearInterval(pomoTimerInterval);
+                    pomoTimerInterval = null;
+                    pomoCurrentMode = 'work';
+                    pomoCompletedCycles = 0;
+                    pomoSecondsRemaining = POMO_DURATIONS[pomoCurrentMode];
+                    
+                    translateDisplayDigits();
+                    
+                    const freshToggleBtn = document.getElementById('btn-timer-toggle');
+                    if (freshToggleBtn) {
+                        freshToggleBtn.innerText = "Start";
+                        freshToggleBtn.style.backgroundColor = "var(--color-mint-green)";
+                    }
                 }
             });
         }
 
+        // Render snapshots immediately on entry point
         translateDisplayDigits();
     }
 
     /* ==========================================================================
        V. ACADEMIC RESOURCE FOLDER (Dynamic Binders & Openable Previews)
        ========================================================================== */
-    function initResourceFolder() {
+function initResourceFolder() {
         const subjectSelect = document.getElementById('folder-subject-select');
         const activeBadge = document.getElementById('active-subject-badge');
         const notesArea = document.getElementById('folder-notes-input');
@@ -408,25 +543,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const filesList = document.getElementById('uploaded-files-list');
         const fileCountLabel = document.getElementById('file-count');
 
-        // Subject Adder Form DOM Elements
         const triggerAddBtn = document.getElementById('btn-trigger-add-subject');
         const modalFormRow = document.getElementById('add-subject-modal-row');
         const newSubjectNameInput = document.getElementById('new-subject-name-input');
         const saveNewSubjectBtn = document.getElementById('btn-save-new-subject');
         const cancelNewSubjectBtn = document.getElementById('btn-cancel-new-subject');
+        const deleteSubjectBtn = document.getElementById('btn-delete-current-subject');
 
-        // Baseline Default System Profiles
+        // NEW: Multi-Notebook DOM targets
+        const notebookSelect = document.getElementById('notebook-select');
+        const addNotebookBtn = document.getElementById('btn-add-notebook');
+        const deleteNotebookBtn = document.getElementById('btn-delete-notebook');
+
         const defaultSubjects = [
             { id: "research", name: "Research Thesis" },
             { id: "mobile-web", name: "Mobile & Web Applications" },
             { id: "database", name: "Database Systems & SQL" }
         ];
 
-        // Track array state dynamically in storage
         let customSubjectsList = JSON.parse(localStorage.getItem('achie_custom_subject_modules')) || defaultSubjects;
         let activeSubject = localStorage.getItem('achie_active_selected_subject') || customSubjectsList[0].id;
 
-        // --- Render Option Lists ---
         function populateSubjectDropdown() {
             if (!subjectSelect) return;
             subjectSelect.innerHTML = '';
@@ -441,40 +578,145 @@ document.addEventListener('DOMContentLoaded', () => {
             syncWorkspaceView();
         }
 
-        // --- Toggle Active Subjects View Panels ---
         function syncWorkspaceView() {
             if (!subjectSelect) return;
             activeSubject = subjectSelect.value;
             localStorage.setItem('achie_active_selected_subject', activeSubject);
 
-            if (activeBadge) {
+            if (activeBadge && subjectSelect.selectedIndex !== -1) {
                 activeBadge.innerText = subjectSelect.options[subjectSelect.selectedIndex].text;
             }
 
-            // Sync Notebook Target Key Instantly
-            if (notesArea) {
-                notesArea.value = localStorage.getItem(`achie_notebook_text_${activeSubject}`) || "";
-            }
-
+            // Sync dynamic notebooks and standalone module file listings
+            renderNotebookDropdown();
             renderUploadedFiles();
         }
 
-        if (subjectSelect) {
-            subjectSelect.addEventListener('change', syncWorkspaceView);
+        // --- NEW: Multi-Notebook Engines Management ---
+        function renderNotebookDropdown() {
+            if (!notebookSelect) return;
+            notebookSelect.innerHTML = '';
+
+            // Retrieve note arrays mapped uniquely to the active component module
+            let notesList = JSON.parse(localStorage.getItem(`achie_notebooks_list_${activeSubject}`)) || [
+                { id: "default", title: "Main Notes Summary" }
+            ];
+            let activeNoteId = localStorage.getItem(`achie_active_note_${activeSubject}`) || notesList[0].id;
+
+            // Handle fallback checks if an item was deleted
+            if (!notesList.some(n => n.id === activeNoteId)) {
+                activeNoteId = notesList[0].id;
+            }
+
+            notesList.forEach(note => {
+                const opt = document.createElement('option');
+                opt.value = note.id;
+                opt.text = note.title;
+                if (note.id === activeNoteId) opt.selected = true;
+                notebookSelect.appendChild(opt);
+            });
+
+            localStorage.setItem(`achie_active_note_${activeSubject}`, activeNoteId);
+            
+            if (notesArea) {
+                notesArea.value = localStorage.getItem(`achie_note_body_${activeSubject}_${activeNoteId}`) || "";
+            }
         }
 
-        // --- Create Custom Subjects ---
+        if (notebookSelect) {
+            notebookSelect.addEventListener('change', () => {
+                localStorage.setItem(`achie_active_note_${activeSubject}`, notebookSelect.value);
+                if (notesArea) {
+                    notesArea.value = localStorage.getItem(`achie_note_body_${activeSubject}_${notebookSelect.value}`) || "";
+                }
+            });
+        }
+
+        if (addNotebookBtn) {
+            addNotebookBtn.addEventListener('click', () => {
+                const title = prompt("Enter a title for this new notebook section:");
+                if (!title || !title.trim()) return;
+
+                let notesList = JSON.parse(localStorage.getItem(`achie_notebooks_list_${activeSubject}`)) || [
+                    { id: "default", title: "Main Notes Summary" }
+                ];
+                
+                const newNoteId = "note_" + Date.now();
+                notesList.push({ id: newNoteId, title: title.trim() });
+                
+                localStorage.setItem(`achie_notebooks_list_${activeSubject}`, JSON.stringify(notesList));
+                localStorage.setItem(`achie_active_note_${activeSubject}`, newNoteId);
+                
+                renderNotebookDropdown();
+            });
+        }
+
+        if (deleteNotebookBtn) {
+            deleteNotebookBtn.addEventListener('click', () => {
+                let notesList = JSON.parse(localStorage.getItem(`achie_notebooks_list_${activeSubject}`)) || [
+                    { id: "default", title: "Main Notes Summary" }
+                ];
+
+                if (notesList.length <= 1) {
+                    alert("Your academic module must retain at least one operational notebook.");
+                    return;
+                }
+
+                if (confirm("Are you sure you want to permanently delete this notebook note?")) {
+                    const currentNoteId = notebookSelect.value;
+                    
+                    localStorage.removeItem(`achie_note_body_${activeSubject}_${currentNoteId}`);
+                    notesList = notesList.filter(n => n.id !== currentNoteId);
+                    
+                    localStorage.setItem(`achie_notebooks_list_${activeSubject}`, JSON.stringify(notesList));
+                    localStorage.setItem(`achie_active_note_${activeSubject}`, notesList[0].id);
+                    
+                    renderNotebookDropdown();
+                }
+            });
+        }
+
+        // --- 💾 AUTO-SAVE ENGINE & MANUAL SAVE BACKUP ---
+        if (notesArea && notebookSelect) {
+            // 1. REAL-TIME AUTO-SAVE: Saves every keystroke immediately
+            notesArea.addEventListener('input', () => {
+                const currentNoteId = notebookSelect.value;
+                if (currentNoteId) {
+                    localStorage.setItem(`achie_note_body_${activeSubject}_${currentNoteId}`, notesArea.value);
+                }
+            });
+
+            // 2. MANUAL SAVE BUTTON (Kept for user peace of mind & UI feedback)
+            if (saveNotesBtn) {
+                saveNotesBtn.addEventListener('click', () => {
+                    const currentNoteId = notebookSelect.value;
+                    localStorage.setItem(`achie_note_body_${activeSubject}_${currentNoteId}`, notesArea.value);
+                    
+                    const nativeText = saveNotesBtn.innerText;
+                    saveNotesBtn.innerText = "✓ Saved Successfully!";
+                    saveNotesBtn.style.backgroundColor = "var(--color-mint-green)";
+                    
+                    setTimeout(() => {
+                        saveNotesBtn.innerText = nativeText;
+                        saveNotesBtn.style.backgroundColor = "";
+                    }, 1500);
+                });
+            }
+        }
+        // --- Core Module Selection Logic Event Wire-Ups ---
+        if (subjectSelect) subjectSelect.addEventListener('change', syncWorkspaceView);
+
         if (triggerAddBtn && modalFormRow) {
             triggerAddBtn.addEventListener('click', () => {
                 modalFormRow.classList.remove('hidden');
-                newSubjectNameInput.focus();
+                if (newSubjectNameInput) newSubjectNameInput.focus();
             });
         }
 
         if (cancelNewSubjectBtn && modalFormRow) {
             cancelNewSubjectBtn.addEventListener('click', () => {
                 modalFormRow.classList.add('hidden');
-                newSubjectNameInput.value = '';
+                if (newSubjectNameInput) newSubjectNameInput.value = '';
             });
         }
 
@@ -487,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customSubjectsList.push({ id: generatedId, name: titleText });
                 
                 localStorage.setItem('achie_custom_subject_modules', JSON.stringify(customSubjectsList));
-                activeSubject = generatedId; // Switch selection directly to new custom binder
+                activeSubject = generatedId; 
 
                 populateSubjectDropdown();
                 modalFormRow.classList.add('hidden');
@@ -495,23 +737,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // --- Save Unique Content to Notebook ---
-        if (saveNotesBtn && notesArea) {
-            saveNotesBtn.addEventListener('click', () => {
-                localStorage.setItem(`achie_notebook_text_${activeSubject}`, notesArea.value);
-                
-                const nativeText = saveNotesBtn.innerText;
-                saveNotesBtn.innerText = "✓ Notebook Content Saved!";
-                saveNotesBtn.style.backgroundColor = "var(--color-mint-green)";
-                
-                setTimeout(() => {
-                    saveNotesBtn.innerText = nativeText;
-                    saveNotesBtn.style.backgroundColor = "";
-                }, 1500);
+        if (deleteSubjectBtn) {
+            deleteSubjectBtn.addEventListener('click', () => {
+                if (customSubjectsList.length <= 1) {
+                    alert("You must keep at least one academic module active.");
+                    return;
+                }
+
+                const currentOptionText = subjectSelect.options[subjectSelect.selectedIndex].text;
+                if (confirm(`Permanently delete "${currentOptionText}"? This completely cleans out all linked notebooks and repository documents!`)) {
+                    
+                    // Comprehensive clear matching storage arrays keys
+                    let notesList = JSON.parse(localStorage.getItem(`achie_notebooks_list_${activeSubject}`)) || [];
+                    notesList.forEach(n => localStorage.removeItem(`achie_note_body_${activeSubject}_${n.id}`));
+                    
+                    localStorage.removeItem(`achie_notebooks_list_${activeSubject}`);
+                    localStorage.removeItem(`achie_active_note_${activeSubject}`);
+                    localStorage.removeItem(`achie_files_${activeSubject}`);
+
+                    customSubjectsList = customSubjectsList.filter(subj => subj.id !== activeSubject);
+                    localStorage.setItem('achie_custom_subject_modules', JSON.stringify(customSubjectsList));
+                    
+                    activeSubject = customSubjectsList[0].id;
+                    localStorage.setItem('achie_active_selected_subject', activeSubject);
+
+                    populateSubjectDropdown();
+                }
             });
         }
 
-        // --- Process File Stream Uploads ---
+        // --- Mapped File Streams Processing ---
         if (dropZone && fileInput) {
             dropZone.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', (e) => handleFileRegistration(e.target.files));
@@ -519,11 +774,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function handleFileRegistration(filesListArray) {
             let mockUploadedFiles = JSON.parse(localStorage.getItem(`achie_files_${activeSubject}`)) || [];
-            
+            let loadedCount = 0;
+
             for (let i = 0; i < filesListArray.length; i++) {
                 const file = filesListArray[i];
-                
                 const reader = new FileReader();
+                
                 reader.onload = function(event) {
                     mockUploadedFiles.push({
                         id: Date.now() + i + Math.random(),
@@ -533,14 +789,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         dataUrl: event.target.result 
                     });
                     
-                    localStorage.setItem(`achie_files_${activeSubject}`, JSON.stringify(mockUploadedFiles));
-                    renderUploadedFiles();
+                    loadedCount++;
+                    if (loadedCount === filesListArray.length) {
+                        localStorage.setItem(`achie_files_${activeSubject}`, JSON.stringify(mockUploadedFiles));
+                        renderUploadedFiles();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        // --- Render List View and File Actions ---
         function renderUploadedFiles() {
             if (!filesList || !fileCountLabel) return;
             
@@ -549,7 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fileCountLabel.innerText = mockUploadedFiles.length;
 
             if (mockUploadedFiles.length === 0) {
-                filesList.innerHTML = `<li style="color: #64748b; font-style: italic; font-size: 0.9rem; padding: 0.5rem 0;">No reference files attached to this module.</li>`;
+                filesList.innerHTML = `<li style="color: #64748b; font-style: italic; font-size: 0.9rem; padding: 0.5rem 0;">No context reference files attached to this module.</li>`;
                 return;
             }
 
@@ -558,27 +816,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.5rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;";
                 
                 li.innerHTML = `
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; cursor: pointer; color: #3b82f6;" class="file-download-link" title="Click to open file">📄 ${file.name} (${file.size})</span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; cursor: pointer; color: #3b82f6;" class="file-download-link">📄 ${file.name} (${file.size})</span>
                     <button class="btn-delete-file" style="background: transparent; color: #ef4444; border: none; font-size: 1.1rem; cursor: pointer;">&times;</button>
                 `;
 
-                // File Open Action Trigger Hook
                 li.querySelector('.file-download-link').addEventListener('click', () => {
-                    if (!file.dataUrl) {
-                        alert("File signature missing.");
-                        return;
-                    }
-                    
                     const newTab = window.open();
                     if(newTab) {
                         newTab.document.write(`<iframe src="${file.dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
                         newTab.document.title = file.name;
-                    } else {
-                        alert("Pop-up blocked! Enable permissions to preview documents.");
                     }
                 });
 
-                // Delete file logic
                 li.querySelector('.btn-delete-file').addEventListener('click', () => {
                     mockUploadedFiles = mockUploadedFiles.filter(f => f.id !== file.id);
                     localStorage.setItem(`achie_files_${activeSubject}`, JSON.stringify(mockUploadedFiles));
@@ -649,20 +898,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initSupportModalHooks() {
         const openModalBtn = document.getElementById('btn-open-modal');
+        const bookingFormWrapper = document.getElementById('counseling-booking-form-wrapper');
+        const appointmentForm = document.getElementById('appointment-booking-form');
+        const cancelBookingBtn = document.getElementById('btn-cancel-booking');
+        
+        const courseSelect = document.getElementById('book-course');
+        const otherCourseWrapper = document.getElementById('course-other-wrapper');
+        const otherCourseInput = document.getElementById('book-course-other');
+
+        // Modal / Verification Room Elements (Targeting your existing overlay structure)
         const modalOverlay = document.getElementById('counselor-modal');
         const loadingState = document.getElementById('modal-loading-state');
         const successState = document.getElementById('modal-success-state');
 
+        // 1. Reveal Form Wrapper on baseline click
         if (openModalBtn) {
             openModalBtn.addEventListener('click', () => {
-                modalOverlay.classList.remove('hidden');
-                loadingState.classList.remove('hidden');
-                successState.classList.add('hidden');
+                bookingFormWrapper.classList.remove('hidden');
+                openModalBtn.classList.add('hidden'); // Optional: Hides button once form is open
+                bookingFormWrapper.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
 
-                setTimeout(() => {
-                    loadingState.classList.add('hidden');
-                    successState.classList.remove('hidden');
-                }, 2000);
+        // 2. Dynamic Toggle for "Other" Program input field
+        if (courseSelect && otherCourseWrapper) {
+            courseSelect.addEventListener('change', () => {
+                if (courseSelect.value === 'other') {
+                    otherCourseWrapper.classList.remove('hidden');
+                    if (otherCourseInput) otherCourseInput.required = true;
+                } else {
+                    otherCourseWrapper.classList.add('hidden');
+                    if (otherCourseInput) {
+                        otherCourseInput.required = false;
+                        otherCourseInput.value = '';
+                    }
+                }
+            });
+        }
+
+        // 3. Handle Cancel Button actions
+        if (cancelBookingBtn && bookingFormWrapper && openModalBtn) {
+            cancelBookingBtn.addEventListener('click', () => {
+                appointmentForm.reset();
+                if (otherCourseWrapper) otherCourseWrapper.classList.add('hidden');
+                bookingFormWrapper.classList.add('hidden');
+                openModalBtn.classList.remove('hidden');
+            });
+        }
+
+        // 4. Form Submission: Process inputs, then run your room validation sequences
+        if (appointmentForm) {
+            appointmentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                // Extract checked values for areas of concern
+                const checkedConcerns = [];
+                const concernCheckboxes = document.querySelectorAll('input[name="concern"]:checked');
+                concernCheckboxes.forEach(cb => {
+                    checkedConcerns.push(cb.value);
+                });
+
+                // Validation safeguard check for checkboxes
+                if (checkedConcerns.length === 0) {
+                    alert("Please select at least one primary area of concern.");
+                    return;
+                }
+
+                // Compile structured payload (Ready if you connect this to a backend/database later)
+                const bookingData = {
+                    lastName: document.getElementById('book-last-name').value.trim(),
+                    firstName: document.getElementById('book-first-name').value.trim(),
+                    middleName: document.getElementById('book-middle-name').value.trim(),
+                    course: courseSelect.value === 'other' ? otherCourseInput.value.trim() : courseSelect.value,
+                    yearLevel: document.getElementById('book-year').value,
+                    email: document.getElementById('book-email').value.trim(),
+                    daysAvailable: document.getElementById('book-days').value.trim(),
+                    timesAvailable: document.getElementById('book-times').value.trim(),
+                    concerns: checkedConcerns,
+                    reason: document.getElementById('book-reason').value.trim()
+                };
+
+                console.log("Secure Booking Payload Dispatched: ", bookingData);
+
+                // Open overlay and fire secure loading animation sequences
+                if (modalOverlay) {
+                    modalOverlay.classList.remove('hidden');
+                    if (loadingState) loadingState.classList.remove('hidden');
+                    if (successState) successState.classList.add('hidden');
+
+                    // Simulate verifying room parameters match securely
+                    setTimeout(() => {
+                        if (loadingState) loadingState.classList.add('hidden');
+                        if (successState) successState.classList.remove('hidden');
+                        
+                        // Clear out form inputs post verification completion 
+                        appointmentForm.reset();
+                        if (otherCourseWrapper) otherCourseWrapper.classList.add('hidden');
+                        if (bookingFormWrapper) bookingFormWrapper.classList.add('hidden');
+                        if (openModalBtn) openModalBtn.classList.remove('hidden');
+                    }, 2000);
+                }
             });
         }
     }
